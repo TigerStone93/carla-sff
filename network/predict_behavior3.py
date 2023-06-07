@@ -188,7 +188,7 @@ class PredictBehavior:
         self.log_learner_prob += l5
         self.log_num += 1
 
-    def get_result(self, input_map, input_state):
+    def get_result(self, input_map, input_state): # called by Get_Predict_Result() in safetypotential.py
         input_list = {self.layer_input_map : input_map, self.layer_input_state : input_state}
         sess = tf.get_default_session()
 
