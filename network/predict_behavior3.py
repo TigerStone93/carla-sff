@@ -10,6 +10,8 @@ class PredictBehavior:
             self.layer_input_state = tf.placeholder(tf.float32, [None, 5])
             self.layer_input_target = tf.placeholder(tf.float32, [None, 2])
             
+            # ==================================================================================================== #
+            
             with tf.variable_scope("ConvNet_" + name, reuse=reuse):
                 conv_w1 = tf.get_variable("conv_w1", shape=[5, 5, 3, 16], dtype=tf.float32, 
                     initializer=tf.initializers.truncated_normal(mean=0.0, stddev=0.01), trainable=True)
@@ -65,6 +67,8 @@ class PredictBehavior:
                 self.conv_fc = tf.layers.Flatten()(conv5)
                 self.convnet_params = tf.trainable_variables(scope=tf.get_variable_scope().name)
 
+            # ==================================================================================================== #
+            
             with tf.variable_scope("ProbFC_" + name, reuse=reuse):
                 fc = tf.concat([self.conv_fc, self.layer_input_state], axis=1)
 
@@ -97,6 +101,8 @@ class PredictBehavior:
                 fc3 = tf.matmul(fc2, w3) + b3
                 self.raw_prob = fc3
                 self.probfc_params = tf.trainable_variables(scope=tf.get_variable_scope().name)
+                
+            # ==================================================================================================== #
 
             with tf.variable_scope("DistFC_" + name, reuse=reuse):
                 fc = tf.concat([self.conv_fc, self.layer_input_state], axis=1)
@@ -131,6 +137,7 @@ class PredictBehavior:
                 self.mu = fc3
                 self.distfc_params = tf.trainable_variables(scope=tf.get_variable_scope().name)
 
+            # trajectory and probability
             target_output = tf.tile(self.layer_input_target, [1, 4])
             target_log_prob = -((self.mu - target_output) ** 2)
             self.target_log_prob = tf.reduce_sum(tf.reshape(target_log_prob, [-1, 4, 2]), axis=2)
