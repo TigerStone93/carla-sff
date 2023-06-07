@@ -10,7 +10,7 @@ class PredictBehavior:
             self.layer_input_state = tf.placeholder(tf.float32, [None, 5])
             self.layer_input_target = tf.placeholder(tf.float32, [None, 2])
             
-            # ==================================================================================================== #
+            # ============================== #
             
             with tf.variable_scope("ConvNet_" + name, reuse=reuse):
                 conv_w1 = tf.get_variable("conv_w1", shape=[5, 5, 3, 16], dtype=tf.float32, 
@@ -67,7 +67,7 @@ class PredictBehavior:
                 self.conv_fc = tf.layers.Flatten()(conv5)
                 self.convnet_params = tf.trainable_variables(scope=tf.get_variable_scope().name)
 
-            # ==================================================================================================== #
+            # ============================== #
             
             with tf.variable_scope("ProbFC_" + name, reuse=reuse):
                 fc = tf.concat([self.conv_fc, self.layer_input_state], axis=1)
@@ -102,7 +102,7 @@ class PredictBehavior:
                 self.raw_prob = fc3
                 self.probfc_params = tf.trainable_variables(scope=tf.get_variable_scope().name)
                 
-            # ==================================================================================================== #
+            # ============================== #
 
             with tf.variable_scope("DistFC_" + name, reuse=reuse):
                 fc = tf.concat([self.conv_fc, self.layer_input_state], axis=1)
@@ -137,7 +137,7 @@ class PredictBehavior:
                 self.mu = fc3
                 self.distfc_params = tf.trainable_variables(scope=tf.get_variable_scope().name)
 
-            # ==================================================================================================== #
+            # ============================== #
             
             # trajectory and probability
             target_output = tf.tile(self.layer_input_target, [1, 4])
@@ -175,7 +175,8 @@ class PredictBehavior:
                 return x
             self.trainable_dict = {nameremover(var.name, self.name) : var for var in self.trainable_params}
 
-
+    # ============================================================ #
+            
     def optimize_batch(self, input_map, input_state, input_target):
         input_list = {self.layer_input_map : input_map, self.layer_input_state : input_state, self.layer_input_target : input_target}
         sess = tf.get_default_session()
@@ -197,6 +198,8 @@ class PredictBehavior:
         self.log_learner_prob += l5
         self.log_num += 1
 
+    # ============================================================ #
+    
     # called by Get_Predict_Result() in safetypotential.py
     def get_result(self, input_map, input_state):
         input_list = {self.layer_input_map : input_map, self.layer_input_state : input_state}
@@ -205,6 +208,8 @@ class PredictBehavior:
         l1, l2 = sess.run([self.prob, self.mu], input_list)
         return l1, l2
 
+    # ============================================================ #
+    
     # called by train_predict_behavior.py
     def network_initialize(self):
         sess = tf.get_default_session()
@@ -218,20 +223,27 @@ class PredictBehavior:
         self.log_num = 0
         self.reset_log_num = False
         
+    # ============================================================ #
+    
     # called by train_predict_behavior.py
     def network_update(self):
         self.reset_log_num = True
+        
+    # ============================================================ #
 
     # called by train_predict_behavior.py
     def log_caption(self):
         return "\t"  + self.name + "_Learner_Prob_Likelihood\t" + self.name + "_Learner_Prob_Regularization\t" + self.name + "_Learner_Dist_Likelihood\t" + self.name \
             + "_Learner_Dist_Regularization\t" + self.name + "_Learner_Prob_Magnitude\t" + self.name + "_Learner_Logsig"
             
+    # ============================================================ #
     
     def current_log(self):
         return "\t" + str(self.log_learner_prob_li / self.log_num) + "\t"  + str(self.log_learner_prob_reg / self.log_num) + "\t"  + str(self.log_learner_dist_li / self.log_num) + "\t" + str(self.log_learner_dist_reg / self.log_num) \
             + "\t" + str(self.log_learner_prob / self.log_num) + "\t" + str(self.log_learner_logsig / self.log_num)
 
+    # ============================================================ #
+    
     def log_print(self):
         print ( self.name + "\n" \
             + "\tLearner_Prob_Likelihood      : " + str(self.log_learner_prob_li / self.log_num) + "\n" \
