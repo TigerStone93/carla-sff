@@ -139,7 +139,7 @@ class PredictBehavior:
 
             # ============================== #
             
-            # trajectory and probability
+            # output trajectory and probability
             target_output = tf.tile(self.layer_input_target, [1, 4])
             target_log_prob = -((self.mu - target_output) ** 2)
             self.target_log_prob = tf.reduce_sum(tf.reshape(target_log_prob, [-1, 4, 2]), axis=2)
