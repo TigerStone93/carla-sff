@@ -188,13 +188,15 @@ class PredictBehavior:
         self.log_learner_prob += l5
         self.log_num += 1
 
-    def get_result(self, input_map, input_state): # called by Get_Predict_Result() in safetypotential.py
+    # called by Get_Predict_Result() in safetypotential.py
+    def get_result(self, input_map, input_state):
         input_list = {self.layer_input_map : input_map, self.layer_input_state : input_state}
         sess = tf.get_default_session()
 
         l1, l2 = sess.run([self.prob, self.mu], input_list)
         return l1, l2
 
+    # called by train_predict_behavior.py
     def network_initialize(self):
         sess = tf.get_default_session()
         self.log_learner_prob_li = 0
@@ -206,10 +208,12 @@ class PredictBehavior:
         self.log_learner_logsig = 0
         self.log_num = 0
         self.reset_log_num = False
-
+        
+    # called by train_predict_behavior.py
     def network_update(self):
         self.reset_log_num = True
 
+    # called by train_predict_behavior.py
     def log_caption(self):
         return "\t"  + self.name + "_Learner_Prob_Likelihood\t" + self.name + "_Learner_Prob_Regularization\t" + self.name + "_Learner_Dist_Likelihood\t" + self.name \
             + "_Learner_Dist_Regularization\t" + self.name + "_Learner_Prob_Magnitude\t" + self.name + "_Learner_Logsig"
