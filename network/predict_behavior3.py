@@ -137,6 +137,8 @@ class PredictBehavior:
                 self.mu = fc3
                 self.distfc_params = tf.trainable_variables(scope=tf.get_variable_scope().name)
 
+            # ==================================================================================================== #
+            
             # trajectory and probability
             target_output = tf.tile(self.layer_input_target, [1, 4])
             target_log_prob = -((self.mu - target_output) ** 2)
