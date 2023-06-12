@@ -168,11 +168,13 @@ class PredictBehavior:
 
          
             self.trainable_params = tf.trainable_variables(scope=tf.get_variable_scope().name)
+            
             def nameremover(x, n):
                 index = x.rfind(n)
                 x = x[index:]
                 x = x[x.find("/") + 1:]
                 return x
+            
             self.trainable_dict = {nameremover(var.name, self.name) : var for var in self.trainable_params}
 
     # ============================================================ #
