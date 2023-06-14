@@ -53,10 +53,12 @@ class SafetyPotential:
         tf.disable_eager_execution()
         self.sess = tf.Session()
         with self.sess.as_default():
-            self.learner = PredictBehavior() # predict_behavior3.py
+            self.learner = PredictBehavior() # from predict_behavior3.py
             learner_saver = tf.train.Saver(var_list=self.learner.trainable_dict, max_to_keep=0)
             learner_saver.restore(self.sess, "/home/user/Documents/Taewoo/carla-sff/iter_5200.ckpt")
 
+    # ============================================================ #
+    
     def Assign_Player(self, player):
         self.player = player
         if self.visualize:
@@ -80,10 +82,14 @@ class SafetyPotential:
                 fourcc = cv2.VideoWriter_fourcc(*'mp4v')
                 self.video = cv2.VideoWriter('recorded_' + datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S') + '.avi', fourcc, 13, (2048, 1024))
 
+    # ============================================================ #
+    
     def Assign_NPCS(self, npcs):
         self.npcs = npcs
         self.acc_buffer = np.array( [ [ [0., 0.] for _ in range(4)] for _ in self.npcs]  )
 
+    # ============================================================ #
+    
     def Get_Predict_Result(self):
         screen_copied = self.network_input_map.copy()
         for npc in self.close_npcs:
@@ -116,6 +122,8 @@ class SafetyPotential:
             self.prob = prob
             self.accel = accel
 
+    # ============================================================ #
+    
     def get_target_speed(self, target_velocity_in_scenario, route, visualize=False):
         target_velocity = target_velocity_in_scenario # HO ADDED 20.0
         sff_potential = 0.0
@@ -292,6 +300,8 @@ class SafetyPotential:
             #cv2.imshow("SafetyPotential2", final2)
             #cv2.waitKey(1)
 
+    # ============================================================ #
+    
     def on_cam_topview_update(self, image):
         if not image:
             return
@@ -304,6 +314,8 @@ class SafetyPotential:
         #self.img_topview = cv2.cvtColor(np_image, cv2.COLOR_GRAY2RGB)
         self.img_topview = cv2.cvtColor(np_image, cv2.COLOR_BGR2RGB)
 
+    # ============================================================ #
+    
     def on_cam_frontview_update(self, image):
         if not image:
             return
@@ -314,6 +326,8 @@ class SafetyPotential:
         np_image = np_image[:, :, ::-1]
         self.img_frontview = cv2.cvtColor(np_image, cv2.COLOR_BGR2RGB)
 
+    # ============================================================ #
+    
     def destroy(self):
         if self.visualize:
             if self.cam_topview:
