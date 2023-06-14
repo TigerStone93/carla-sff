@@ -210,7 +210,7 @@ class PredictBehavior:
         sess = tf.get_default_session()
 
         l1, l2 = sess.run([self.prob, self.mu], input_list)
-        return l1, l2
+        return l1, l2 # prob, accel
 
     # ============================================================ #
     
