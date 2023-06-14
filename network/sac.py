@@ -99,6 +99,7 @@ class SAC:
     # ============================================================ #
 
     # NOT USED
+    '''
     def get_action(self, input_state, discrete=False):
         input_list = {self.input_state : [input_state]}
         sess = tf.get_default_session()
@@ -107,10 +108,12 @@ class SAC:
         else:
             output = sess.run(self.follower_policy.reparameterized, input_list)
         return output[0]
+    '''
     
     # ============================================================ #
     
     # NOT USED
+    '''
     def get_action_batch(self, input_state, discrete=False):
         input_list = {self.input_state : input_state}
         sess = tf.get_default_session()
@@ -119,6 +122,7 @@ class SAC:
         else:
             output = sess.run(self.follower_policy.reparameterized, input_list)
         return output
+    '''
 
     # ============================================================ #
     
