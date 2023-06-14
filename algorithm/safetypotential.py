@@ -100,23 +100,23 @@ class SafetyPotential:
     
     # called by get_target_speed() in safetypotential.py
     def Get_Predict_Result(self):
+        # draw circles on locations of close npcs
         screen_copied = self.network_input_map.copy()
         for npc in self.close_npcs:
             tr = npc.get_transform() # location and rotation
-            v = npc.get_velocity()
+            #v = npc.get_velocity()
             loc = np.array([tr.location.x, tr.location.y])
             cv2.circle(screen_copied, tuple( ( (loc + self.network_input_loctr) * 8.).astype(int) ), 12, (128, 255, 128), -1)
 
         screen_array = []
         cur_record = []
-
         with self.sess.as_default():
             for npc in self.close_npcs:
                 tr = npc.get_transform() # location and rotation
                 v = npc.get_velocity()
-                
-                pos = (np.array([tr.location.x, tr.location.y]) + self.network_input_loctr) * 8.
+                pos = (np.array([tr.location.x, tr.location.y]) + self.network_input_loctr) * 8. # ???
 
+                # ???
                 M1 = np.float32( [ [1, 0, -pos[0]], [0, 1, -pos[1]], [0, 0, 1] ] )
                 M2 = cv2.getRotationMatrix2D((0, 0), tr.rotation.yaw + 90, 1.0)
                 M2 = np.append(M2, np.float32([[0, 0, 1]]), axis=0)
@@ -124,7 +124,7 @@ class SafetyPotential:
                 M = np.matmul(np.matmul(M3, M2), M1)
                 rotated = cv2.warpAffine(screen_copied, M[:2], (256, 256))
 
-                screen_array.append(rotated.astype(np.float32) / 128. - 1.)
+                screen_array.append(rotated.astype(np.float32) / 128. - 1.) # ???
                 cur_record.append([tr.location.x, tr.location.y, tr.rotation.yaw, v.x, v.y])
 
             prob, accel = self.learner.get_result(screen_array, cur_record)
