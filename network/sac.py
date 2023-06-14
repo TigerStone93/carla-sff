@@ -1,12 +1,12 @@
-
 import numpy as np
 import tensorflow as tf
 import math
 from networks.gaussian_policy import GaussianPolicy
 from networks.mlp import MLP
 
-
 EPS = 1e-5
+
+
 
 class SAC:
     def __init__(self, state_len, action_len, name="",
@@ -14,7 +14,7 @@ class SAC:
         value_lr=0.001, policy_lr=0.001, alpha_lr = 0.001, policy_gamma=0.98, policy_reg=0.001, policy_update_ratio=0.05, learning_rate_decay=None) :
 
         self.name = "SAC" + name
-        self.target_entropy=-action_len
+        self.target_entropy = -action_len
         with tf.variable_scope(self.name): 
             self.input_state = tf.placeholder(tf.float32, [None, state_len], name="input_state")
             self.input_next_state = tf.placeholder(tf.float32, [None, state_len], name="input_next_state")
