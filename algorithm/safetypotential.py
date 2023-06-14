@@ -59,7 +59,8 @@ class SafetyPotential:
 
     # ============================================================ #
     
-    # called by
+    # record video with front camera
+    # called by test_sff_policy.py, test_default_policy.py, manual_control.py
     def Assign_Player(self, player):
         self.player = player
         if self.visualize:
@@ -85,16 +86,18 @@ class SafetyPotential:
 
     # ============================================================ #
     
+    # called by test_sff_policy.py, test_default_policy.py, manual_control.py
     def Assign_NPCS(self, npcs):
         self.npcs = npcs
         self.acc_buffer = np.array( [ [ [0., 0.] for _ in range(4)] for _ in self.npcs]  )
 
     # ============================================================ #
     
+    # called by get_target_speed() in safetypotential.py
     def Get_Predict_Result(self):
         screen_copied = self.network_input_map.copy()
         for npc in self.close_npcs:
-            tr = npc.get_transform()
+            tr = npc.get_transform() # location and rotation
             v = npc.get_velocity()
             loc = np.array([tr.location.x, tr.location.y])
             cv2.circle(screen_copied, tuple(((loc + self.network_input_loctr) * 8.).astype(int)), 12, (128, 255, 128), -1)
