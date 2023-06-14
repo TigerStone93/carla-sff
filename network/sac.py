@@ -97,7 +97,8 @@ class SAC:
             self.trainable_dict = {nameremover(var.name, self.name) : var for var in self.trainable_params}
 
     # ============================================================ #
-            
+
+    # NOT USED
     def get_action(self, input_state, discrete=False):
         input_list = {self.input_state : [input_state]}
         sess = tf.get_default_session()
@@ -106,7 +107,10 @@ class SAC:
         else:
             output = sess.run(self.follower_policy.reparameterized, input_list)
         return output[0]
-
+    
+    # ============================================================ #
+    
+    # NOT USED
     def get_action_batch(self, input_state, discrete=False):
         input_list = {self.input_state : input_state}
         sess = tf.get_default_session()
@@ -116,6 +120,9 @@ class SAC:
             output = sess.run(self.follower_policy.reparameterized, input_list)
         return output
 
+    # ============================================================ #
+    
+    # called by train_predict_behavior.py
     def optimize_batch(self, input_state, input_next_state, input_action, input_reward, input_survive, input_iter=None):
         input_list = {self.input_state : input_state, self.input_next_state : input_next_state, 
             self.input_action : input_action, self.input_reward : input_reward, self.input_survive : input_survive,
@@ -133,7 +140,9 @@ class SAC:
         self.log_policy_a += l4
         self.log_num_follower += 1
 
+    # ============================================================ #
 
+    # called by train_predict_behavior.py
     def network_initialize(self):
         sess = tf.get_default_session()
         sess.run([self.qvalue1_assign, self.qvalue2_assign])
@@ -143,6 +152,9 @@ class SAC:
         self.log_policy_a = 0
         self.log_num_follower = 0
 
+    # ============================================================ #
+    
+    # called by train_predict_behavior.py
     def network_update(self):
         sess = tf.get_default_session()
         sess.run([self.qvalue1_update, self.qvalue2_update])
@@ -152,16 +164,24 @@ class SAC:
         self.log_policy_a = 0
         self.log_num_follower = 0
 
+    # ============================================================ #
+    
+    # called by train_predict_behavior.py
     def log_caption(self):
         return "\t" + self.name + "_Avg_Qvalue1\t" + self.name + "_Avg_Qvalue2\t" + self.name + "_Avg_Policy\t"  + self.name + "_Avg_Alpha"
-            
     
+    # ============================================================ #
+    
+    # called by train_predict_behavior.py
     def current_log(self):
         return "\t" + str(self.log_policy_q1 / self.log_num_follower) + "\t" + str(self.log_policy_q2 / self.log_num_follower) \
             + "\t" + str(self.log_policy_p / self.log_num_follower)  + "\t" + str(self.log_policy_a / self.log_num_follower) 
 
+    # ============================================================ #
+    
+    # called by train_predict_behavior.py
     def log_print(self):
-        print ( self.name + "\n" \
+        print(self.name + "\n" \
             + "\tAvg_Qvalue1                      : " + str(self.log_policy_q1 / self.log_num_follower) + "\n" \
             + "\tAvg_Qvalue2                      : " + str(self.log_policy_q2 / self.log_num_follower) + "\n" \
             + "\tAvg_Policy                       : " + str(self.log_policy_p / self.log_num_follower) + "\n" \
