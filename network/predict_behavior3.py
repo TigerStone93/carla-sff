@@ -206,7 +206,7 @@ class PredictBehavior:
     
     # called by Get_Predict_Result() in safetypotential.py
     def get_result(self, input_map, input_state):
-        input_list = {self.layer_input_map : input_map, self.layer_input_state : input_state}
+        input_list = {self.layer_input_map : input_map, self.layer_input_state : input_state} # dictionary
         sess = tf.get_default_session()
 
         l1, l2 = sess.run([self.prob, self.mu], input_list)
