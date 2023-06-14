@@ -34,8 +34,8 @@ class SafetyPotential:
                 if len(lane) > 0:
                     self.lanes.append(np.array(lane))
 
-        self.network_input_map = np.full((4096, 4096, 3), 128, np.uint8)
-        self.network_input_loctr = np.array([256, 216])
+        self.network_input_map = np.full((4096, 4096, 3), 128, np.uint8) # ???
+        self.network_input_loctr = np.array([256, 216]) # ???
         for lane in self.lanes:
             for i, _ in enumerate(lane[:-1]):
                 dx = lane[i+1][0] - lane[i][0]
@@ -45,8 +45,11 @@ class SafetyPotential:
                     color = ( int(dx * 127 / r + 128), 128, int(dy * 127 / r + 128) ) # ???
                     cv2.line(self.network_input_map, tuple( ( (lane[i] + self.network_input_loctr) * 8.).astype(np.int32) ), tuple( ( (lane[i+1] + self.network_input_loctr) * 8.).astype(np.int32) ), color, 4)
         
+        # called by Assign_Player()
         self.cam_topview = None
         self.cam_frontview = None
+        
+        # called by get_target_speed(), on_cam_topview_update(), on_cam_frontview_update()
         self.img_topview = None
         self.img_frontview = None
 
@@ -59,13 +62,13 @@ class SafetyPotential:
 
     # ============================================================ #
     
-    # record video with front camera
     # called by test_sff_policy.py, test_default_policy.py, manual_control.py
     def Assign_Player(self, player):
         self.player = player
         if self.visualize:
             world = player.get_world()
 
+            # cam_topview
             bp = world.get_blueprint_library().find('sensor.camera.rgb')
             bp.set_attribute('image_size_x', '1024')
             bp.set_attribute('image_size_y', '1024')
@@ -73,6 +76,7 @@ class SafetyPotential:
                 carla.Location(x=24.0, z=32.0), carla.Rotation(pitch=-90, yaw=0)), attach_to=player)
             self.cam_topview.listen(lambda image: self.on_cam_topview_update(image))
 
+            # cam_frontview
             bp = world.get_blueprint_library().find('sensor.camera.rgb')
             bp.set_attribute('image_size_x', '1024')
             bp.set_attribute('image_size_y', '512')
@@ -80,6 +84,7 @@ class SafetyPotential:
                 carla.Location(x=-7.5, z=2.5)), attach_to=player) # 2.3 1.0
             self.cam_frontview.listen(lambda image: self.on_cam_frontview_update(image))
 
+            # record video
             if self.record_video:
                 fourcc = cv2.VideoWriter_fourcc(*'mp4v')
                 self.video = cv2.VideoWriter('recorded_' + datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S') + '.avi', fourcc, 13, (2048, 1024))
@@ -100,14 +105,14 @@ class SafetyPotential:
             tr = npc.get_transform() # location and rotation
             v = npc.get_velocity()
             loc = np.array([tr.location.x, tr.location.y])
-            cv2.circle(screen_copied, tuple(((loc + self.network_input_loctr) * 8.).astype(int)), 12, (128, 255, 128), -1)
+            cv2.circle(screen_copied, tuple( ( (loc + self.network_input_loctr) * 8.).astype(int) ), 12, (128, 255, 128), -1)
 
         screen_array = []
         cur_record = []
 
         with self.sess.as_default():
             for npc in self.close_npcs:
-                tr = npc.get_transform()
+                tr = npc.get_transform() # location and rotation
                 v = npc.get_velocity()
                 
                 pos = (np.array([tr.location.x, tr.location.y]) + self.network_input_loctr) * 8.
