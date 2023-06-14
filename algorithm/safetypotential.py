@@ -1,4 +1,3 @@
-
 import glob
 import os
 import sys
@@ -9,14 +8,14 @@ try:
         'win-amd64' if os.name == 'nt' else 'linux-x86_64'))[0])
 except IndexError:
     pass
-
 import carla
 import cv2
 import numpy as np
 import datetime
-
-from network.predict_behavior3 import PredictBehavior
 import tensorflow.compat.v1 as tf
+from network.predict_behavior3 import PredictBehavior
+
+
 
 class SafetyPotential:
     def __init__(self, lane_txt, visualize=False, record_video=False):
@@ -35,7 +34,6 @@ class SafetyPotential:
                 if len(lane) > 0:
                     self.lanes.append(np.array(lane))
 
-
         self.network_input_map = np.full((4096, 4096, 3), 128, np.uint8)
         self.network_input_loctr = np.array([256, 216])
         for lane in self.lanes:
@@ -44,8 +42,8 @@ class SafetyPotential:
                 dy = lane[i+1][1] - lane[i][1]
                 r = np.sqrt(dx * dx + dy * dy)
                 if r > 0.1:
-                    color = ( int(dx * 127 / r + 128), 128, int(dy * 127 / r + 128) )
-                    cv2.line(self.network_input_map, tuple(((lane[i] + self.network_input_loctr) * 8.).astype(np.int32)), tuple(((lane[i+1] + self.network_input_loctr) * 8.).astype(np.int32)), color, 4)
+                    color = ( int(dx * 127 / r + 128), 128, int(dy * 127 / r + 128) ) # ???
+                    cv2.line(self.network_input_map, tuple( ( (lane[i] + self.network_input_loctr) * 8.).astype(np.int32) ), tuple( ( (lane[i+1] + self.network_input_loctr) * 8.).astype(np.int32) ), color, 4)
         
         self.cam_topview = None
         self.cam_frontview = None
@@ -55,7 +53,7 @@ class SafetyPotential:
         tf.disable_eager_execution()
         self.sess = tf.Session()
         with self.sess.as_default():
-            self.learner = PredictBehavior()
+            self.learner = PredictBehavior() # predict_behavior3.py
             learner_saver = tf.train.Saver(var_list=self.learner.trainable_dict, max_to_keep=0)
             learner_saver.restore(self.sess, "/home/user/Documents/Taewoo/carla-sff/iter_5200.ckpt")
 
