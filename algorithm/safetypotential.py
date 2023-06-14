@@ -59,6 +59,7 @@ class SafetyPotential:
 
     # ============================================================ #
     
+    # called by
     def Assign_Player(self, player):
         self.player = player
         if self.visualize:
