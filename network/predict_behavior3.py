@@ -160,7 +160,6 @@ class PredictBehavior:
             self.dist_likelihood_loss =  tf.reduce_mean(tf.reduce_min(likelihood_loss, axis=1) + tf.reduce_mean(likelihood_loss, axis=1) * 0.001)
 
 
-
             self.prob_optimizer = tf.train.AdamOptimizer(learner_lr)
             self.prob_train_action = self.prob_optimizer.minimize(loss = self.prob_likelihood_loss + self.prob_regularization_loss * learner_prob_reg, var_list = self.probfc_params)
             self.dist_optimizer = tf.train.AdamOptimizer(learner_lr)
@@ -178,7 +177,8 @@ class PredictBehavior:
             self.trainable_dict = {nameremover(var.name, self.name) : var for var in self.trainable_params}
 
     # ============================================================ #
-            
+    
+    # called by train_predict_behavior.py
     def optimize_batch(self, input_map, input_state, input_target):
         input_list = {self.layer_input_map : input_map, self.layer_input_state : input_state, self.layer_input_target : input_target}
         sess = tf.get_default_session()
@@ -240,12 +240,14 @@ class PredictBehavior:
             
     # ============================================================ #
     
+    # called by train_predict_behavior.py
     def current_log(self):
         return "\t" + str(self.log_learner_prob_li / self.log_num) + "\t"  + str(self.log_learner_prob_reg / self.log_num) + "\t"  + str(self.log_learner_dist_li / self.log_num) + "\t" + str(self.log_learner_dist_reg / self.log_num) \
             + "\t" + str(self.log_learner_prob / self.log_num) + "\t" + str(self.log_learner_logsig / self.log_num)
 
     # ============================================================ #
     
+    # called by train_predict_behavior.py
     def log_print(self):
         print ( self.name + "\n" \
             + "\tLearner_Prob_Likelihood      : " + str(self.log_learner_prob_li / self.log_num) + "\n" \
