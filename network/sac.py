@@ -11,11 +11,10 @@ EPS = 1e-5
 class SAC:
     def __init__(self, state_len, action_len, name="",
         value_hidden_len=[1024, 1024], value_hidden_nonlinearity=tf.nn.leaky_relu, policy_hidden_len=[1024, 1024], policy_hidden_nonlinearity=tf.nn.tanh,
-        value_lr=0.001, policy_lr=0.001, alpha_lr = 0.001, policy_gamma=0.98, policy_reg=0.001, policy_update_ratio=0.05, learning_rate_decay=None) :
-
+        value_lr=0.001, policy_lr=0.001, alpha_lr=0.001, policy_gamma=0.98, policy_reg=0.001, policy_update_ratio=0.05, learning_rate_decay=None):
         self.name = "SAC" + name
         self.target_entropy = -action_len
-        with tf.variable_scope(self.name): 
+        with tf.variable_scope(self.name):
             self.input_state = tf.placeholder(tf.float32, [None, state_len], name="input_state")
             self.input_next_state = tf.placeholder(tf.float32, [None, state_len], name="input_next_state")
             self.input_action = tf.placeholder(tf.float32, [None, action_len], name="input_action")
@@ -27,10 +26,10 @@ class SAC:
                 value_lr = tf.train.exponential_decay(value_lr, self.input_iter, 100, learning_rate_decay)
                 policy_lr = tf.train.exponential_decay(policy_lr, self.input_iter, 100, learning_rate_decay)
                 alpha_lr = tf.train.exponential_decay(alpha_lr, self.input_iter, 100, learning_rate_decay)
-                
+            
+            # ============================== #
             
             with tf.variable_scope("Follower"):
-
                 self.log_alpha = tf.Variable(0., trainable=True)
                 self.alpha = tf.exp(self.log_alpha)
                 self.follower_policy = GaussianPolicy("follower_policy", state_len, action_len, policy_hidden_len, hidden_nonlinearity=policy_hidden_nonlinearity,
@@ -84,18 +83,21 @@ class SAC:
                 self.follower_qvalue1_average = tf.reduce_mean(self.follower_qvalue1.layer_output)
                 self.follower_qvalue2_average = tf.reduce_mean(self.follower_qvalue2.layer_output)
                 self.follower_policy_average = tf.reduce_mean(self.follower_policy.log_pi)
-                    
-                    
 
+            # ============================== #
 
             self.trainable_params = tf.trainable_variables(scope=tf.get_variable_scope().name)
+            
             def nameremover(x, n):
                 index = x.rfind(n)
                 x = x[index:]
                 x = x[x.find("/") + 1:]
                 return x
+            
             self.trainable_dict = {nameremover(var.name, self.name) : var for var in self.trainable_params}
 
+    # ============================================================ #
+            
     def get_action(self, input_state, discrete=False):
         input_list = {self.input_state : [input_state]}
         sess = tf.get_default_session()
