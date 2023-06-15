@@ -122,37 +122,40 @@ class SafetyPotential:
                 M2 = np.append(M2, np.float32([[0, 0, 1]]), axis=0)
                 M3 = np.float32( [ [1, 0, 128], [0, 1, 192], [0, 0, 1] ] )
                 M = np.matmul(np.matmul(M3, M2), M1)
-                rotated = cv2.warpAffine(screen_copied, M[:2], (256, 256))
+                rotated = cv2.warpAffine(screen_copied, M[:2], (256, 256)) # ???
 
-                screen_array.append(rotated.astype(np.float32) / 128. - 1.) # ???
-                cur_record.append([tr.location.x, tr.location.y, tr.rotation.yaw, v.x, v.y])
+                screen_array.append(rotated.astype(np.float32) / 128. - 1.) # input_map ???
+                cur_record.append([tr.location.x, tr.location.y, tr.rotation.yaw, v.x, v.y]) # input_state
 
-            prob, accel = self.learner.get_result(screen_array, cur_record)
+            prob, accel = self.learner.get_result(screen_array, cur_record) # get_result(input_map, input_state)
             self.prob = prob
             self.accel = accel
 
     # ============================================================ #
     
+    # called by sff_lon_control() in actormap.py
     def get_target_speed(self, target_velocity_in_scenario, route, visualize=False):
         target_velocity = target_velocity_in_scenario # HO ADDED 20.0
         sff_potential = 0.0
         final_sff = None
 
         if self.player != None:
-            agent_tr = self.player.get_transform()
+            agent_tr = self.player.get_transform() # location and rotation
             agent_v = self.player.get_velocity()
-            M = cv2.getRotationMatrix2D((512, 512), agent_tr.rotation.yaw + 90, 1.0)
+            
+            M = cv2.getRotationMatrix2D((512, 512), agent_tr.rotation.yaw + 90, 1.0) # ???
 
             locx = 512 - int(agent_tr.location.x * 8)
             locy = 512 - int(agent_tr.location.y * 8)
-            loctr = np.array([locx, locy], np.int32)
+            #loctr = np.array([locx, locy], np.int32) # NOT USED
 
+            # pick out close npcs
             self.close_npcs = []
             for npc in self.npcs:
                 loc = npc.get_transform().location
-                front_loc = loc + npc.get_transform().get_forward_vector() * 5.
-                if np.sqrt( (agent_tr.location.x - loc.x) ** 2 + (agent_tr.location.y - loc.y) ** 2 ) < 256: ##DISTANCE
-                    if np.sqrt( (agent_tr.location.x - front_loc.x) ** 2 + (agent_tr.location.y - front_loc.y) ** 2 ) > 3:
+                front_loc = loc + npc.get_transform().get_forward_vector() * 5. # compute vector pointing forward according to rotation
+                if np.sqrt( (agent_tr.location.x - loc.x) ** 2 + (agent_tr.location.y - loc.y) ** 2 ) < 256: # compute distance
+                    if np.sqrt( (agent_tr.location.x - front_loc.x) ** 2 + (agent_tr.location.y - front_loc.y) ** 2 ) > 3: # ???
                         self.close_npcs.append(npc)
 
             if len(self.close_npcs) > 0:
@@ -164,7 +167,7 @@ class SafetyPotential:
                 route_line = [[512, 512]]
                 for i, waypoint in enumerate(route[1:]):
                     route_line.append([locx + int(waypoint.location.x * 8), locy + int(waypoint.location.y * 8)])
-                    if i == 20:
+                    if i == 20: # ???
                         break
                 route_line = np.array([route_line], dtype=np.int32)
                 cv2.polylines(line_screen, route_line, False, (255,), 20)
