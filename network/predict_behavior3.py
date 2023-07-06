@@ -182,6 +182,7 @@ class PredictBehavior:
     
     # called by train_predict_behavior.py
     def optimize_batch(self, input_map, input_state, input_target):
+        # input_map = screen_array, input_state = cur_record, input_target = target_array
         input_list = {self.layer_input_map : input_map, self.layer_input_state : input_state, self.layer_input_target : input_target}
         sess = tf.get_default_session()
         if(self.reset_log_num):
