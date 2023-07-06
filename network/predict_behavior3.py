@@ -8,9 +8,9 @@ class PredictBehavior:
     def __init__(self, name="0", reuse=False, learner_lr=0.0001, learner_reg=0.001, learner_prob_reg=0.0001):
         self.name = "PredictBehavior_" + name
         with tf.variable_scope("PredictBehavior_" + name, reuse=reuse):
-            self.layer_input_map = tf.placeholder(tf.float32, [None, 256, 256, 3])
-            self.layer_input_state = tf.placeholder(tf.float32, [None, 5])
-            self.layer_input_target = tf.placeholder(tf.float32, [None, 2])
+            self.layer_input_map = tf.placeholder(tf.float32, [None, 256, 256, 3]) # self.layer_input_map = input_map = screen_array
+            self.layer_input_state = tf.placeholder(tf.float32, [None, 5]) # self.layer_input_state = input_state = cur_record = [location.x, locataion.y, rotation.yaw, v.x, v.y]
+            self.layer_input_target = tf.placeholder(tf.float32, [None, 2]) # self.layer_input_target = input_target = target_array = [ax, ay]
             
             # ============================== #
             
@@ -184,7 +184,7 @@ class PredictBehavior:
     def optimize_batch(self, input_map, input_state, input_target):
         # input_map = screen_array
         # input_state = cur_record = [location.x, locataion.y, rotation.yaw, v.x, v.y]
-        # input_target = target_array = [[ax], [ay]]
+        # input_target = target_array = [ax, ay]
         input_list = {self.layer_input_map : input_map, self.layer_input_state : input_state, self.layer_input_target : input_target}
         sess = tf.get_default_session()
         if(self.reset_log_num):
