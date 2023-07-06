@@ -42,13 +42,13 @@ with sess.as_default():
     learner_saver.restore(sess, "train_log/log6/iter_1500.ckpt")
         
     for iteration in range(1501, 100000):
-        record = np.load("gathered/log1/" + str(random.randrange(1000)) + ".npy")
+        record = np.load("gathered/log1/" + str(random.randrange(1000)) + ".npy") 
         record_index = list(range(1, np.shape(record)[0] - 50))
         random.shuffle(record_index)
         for step in record_index[:100]:
             print("%04d" % step)
             screen_copied = screen.copy()
-            cur_record = record[step]
+            cur_record = record[step] # cur_record = [location.x, locataion.y, rotation.yaw, v.x, v.y]
             cos_array = np.cos(cur_record[:, 2] * 0.017453293)
             sin_array = np.sin(cur_record[:, 2] * 0.017453293)
 
