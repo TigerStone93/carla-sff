@@ -143,13 +143,13 @@ class PredictBehavior:
             
             # output trajectory and probability
             target_output = tf.tile(self.layer_input_target, [1, 4])
-            target_log_prob = -((self.mu - target_output) ** 2)
+            target_log_prob = -((self.mu - target_output) ** 2) # self.mu from DistFC
             self.target_log_prob = tf.reduce_sum(tf.reshape(target_log_prob, [-1, 4, 2]), axis=2)
             self.target_prob = tf.exp(self.target_log_prob)
             self.target_prob = self.target_prob / (tf.math.reduce_sum(self.target_prob, axis=1, keepdims=True) + 1e-6)
 
             #self.stable_raw_prob = self.raw_prob - tf.stop_gradient(tf.math.reduce_max(self.raw_prob, axis=1, keepdims=True))
-            self.prob = tf.exp(tf.clip_by_value(self.raw_prob, -10, 2))
+            self.prob = tf.exp(tf.clip_by_value(self.raw_prob, -10, 2)) # self.raw_prob from ProbFC
             self.prob = self.prob / (tf.stop_gradient(tf.math.reduce_sum(self.prob, axis=1, keepdims=True)) + 1e-6)
 
             self.maximum_prob = tf.math.reduce_mean(tf.math.reduce_max(self.prob, axis=1))
