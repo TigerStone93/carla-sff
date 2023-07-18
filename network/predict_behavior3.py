@@ -15,52 +15,36 @@ class PredictBehavior:
             # ============================== #
             
             with tf.variable_scope("ConvNet_" + name, reuse=reuse):
-                conv_w1 = tf.get_variable("conv_w1", shape=[5, 5, 3, 16], dtype=tf.float32, 
-                    initializer=tf.initializers.truncated_normal(mean=0.0, stddev=0.01), trainable=True)
-                conv_b1 = tf.get_variable("conv_b1", shape=[16], dtype=tf.float32, 
-                    initializer=tf.zeros_initializer(dtype=tf.float32),
-                    trainable=True)
+                conv_w1 = tf.get_variable("conv_w1", shape=[5, 5, 3, 16], dtype=tf.float32, initializer=tf.initializers.truncated_normal(mean=0.0, stddev=0.01), trainable=True)
+                conv_b1 = tf.get_variable("conv_b1", shape=[16], dtype=tf.float32, initializer=tf.zeros_initializer(dtype=tf.float32), trainable=True)
 
                 conv1 = tf.nn.conv2d(self.layer_input_map, conv_w1, strides=[1, 1, 1, 1], padding='VALID') + conv_b1
                 conv1 = tf.nn.leaky_relu(conv1, alpha=0.05)
                 conv1 = tf.nn.max_pool(conv1, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='VALID')
 
-                conv_w2 = tf.get_variable("conv_w2", shape=[5, 5, 16, 32], dtype=tf.float32, 
-                    initializer=tf.initializers.truncated_normal(mean=0.0, stddev=0.01), trainable=True)
-                conv_b2 = tf.get_variable("conv_b2", shape=[32], dtype=tf.float32, 
-                    initializer=tf.zeros_initializer(dtype=tf.float32),
-                    trainable=True)
+                conv_w2 = tf.get_variable("conv_w2", shape=[5, 5, 16, 32], dtype=tf.float32, initializer=tf.initializers.truncated_normal(mean=0.0, stddev=0.01), trainable=True)
+                conv_b2 = tf.get_variable("conv_b2", shape=[32], dtype=tf.float32, initializer=tf.zeros_initializer(dtype=tf.float32), trainable=True)
 
                 conv2 = tf.nn.conv2d(conv1, conv_w2, strides=[1, 1, 1, 1], padding='VALID') + conv_b2
                 conv2 = tf.nn.leaky_relu(conv2, alpha=0.05)
                 conv2 = tf.nn.max_pool(conv2, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='VALID')
 
-                conv_w3 = tf.get_variable("conv_w3", shape=[5, 5, 32, 48], dtype=tf.float32, 
-                    initializer=tf.initializers.truncated_normal(mean=0.0, stddev=0.01), trainable=True)
-                conv_b3 = tf.get_variable("conv_b3", shape=[48], dtype=tf.float32, 
-                    initializer=tf.zeros_initializer(dtype=tf.float32),
-                    trainable=True)
+                conv_w3 = tf.get_variable("conv_w3", shape=[5, 5, 32, 48], dtype=tf.float32, initializer=tf.initializers.truncated_normal(mean=0.0, stddev=0.01), trainable=True)
+                conv_b3 = tf.get_variable("conv_b3", shape=[48], dtype=tf.float32, initializer=tf.zeros_initializer(dtype=tf.float32), trainable=True)
 
                 conv3 = tf.nn.conv2d(conv2, conv_w3, strides=[1, 1, 1, 1], padding='VALID') + conv_b3
                 conv3 = tf.nn.leaky_relu(conv3, alpha=0.05)
                 conv3 = tf.nn.max_pool(conv3, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='VALID')
 
-                conv_w4 = tf.get_variable("conv_w4", shape=[5, 5, 48, 64], dtype=tf.float32, 
-                    initializer=tf.initializers.truncated_normal(mean=0.0, stddev=0.01), trainable=True)
-                conv_b4 = tf.get_variable("conv_b4", shape=[64], dtype=tf.float32, 
-                    initializer=tf.zeros_initializer(dtype=tf.float32),
-                    trainable=True)
+                conv_w4 = tf.get_variable("conv_w4", shape=[5, 5, 48, 64], dtype=tf.float32, initializer=tf.initializers.truncated_normal(mean=0.0, stddev=0.01), trainable=True)
+                conv_b4 = tf.get_variable("conv_b4", shape=[64], dtype=tf.float32, initializer=tf.zeros_initializer(dtype=tf.float32), trainable=True)
 
                 conv4 = tf.nn.conv2d(conv3, conv_w4, strides=[1, 1, 1, 1], padding='VALID') + conv_b4
                 conv4 = tf.nn.leaky_relu(conv4, alpha=0.05)
                 conv4 = tf.nn.max_pool(conv4, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='VALID')
 
-
-                conv_w5 = tf.get_variable("conv_w5", shape=[5, 5, 64, 64], dtype=tf.float32, 
-                    initializer=tf.initializers.truncated_normal(mean=0.0, stddev=0.01), trainable=True)
-                conv_b5 = tf.get_variable("conv_b5", shape=[64], dtype=tf.float32, 
-                    initializer=tf.zeros_initializer(dtype=tf.float32),
-                    trainable=True)
+                conv_w5 = tf.get_variable("conv_w5", shape=[5, 5, 64, 64], dtype=tf.float32, initializer=tf.initializers.truncated_normal(mean=0.0, stddev=0.01), trainable=True)
+                conv_b5 = tf.get_variable("conv_b5", shape=[64], dtype=tf.float32, initializer=tf.zeros_initializer(dtype=tf.float32), trainable=True)
 
                 conv5 = tf.nn.conv2d(conv4, conv_w5, strides=[1, 1, 1, 1], padding='VALID') + conv_b5
                 conv5 = tf.nn.leaky_relu(conv5, alpha=0.05)
@@ -74,32 +58,20 @@ class PredictBehavior:
             with tf.variable_scope("ProbFC_" + name, reuse=reuse):
                 fc = tf.concat([self.conv_fc, self.layer_input_state], axis=1)
 
-                w1 = tf.get_variable("w1", shape=[1029, 256], dtype=tf.float32, 
-                    initializer=tf.random_uniform_initializer(-math.sqrt(1.0 / 1029 + 256), math.sqrt(1.0 / 1029 + 256), dtype=tf.float32),
-                    trainable=True)
-                b1 = tf.get_variable("b1", shape=[256], dtype=tf.float32, 
-                    initializer=tf.zeros_initializer(dtype=tf.float32),
-                    trainable=True)
+                w1 = tf.get_variable("w1", shape=[1029, 256], dtype=tf.float32, initializer=tf.random_uniform_initializer(-math.sqrt(1.0 / 1029 + 256), math.sqrt(1.0 / 1029 + 256), dtype=tf.float32), trainable=True)
+                b1 = tf.get_variable("b1", shape=[256], dtype=tf.float32, initializer=tf.zeros_initializer(dtype=tf.float32), trainable=True)
                 fc1 = tf.matmul(fc, w1) + b1
                 fc1 = tf.nn.leaky_relu(fc1, alpha=0.05)
 
 
-                w2 = tf.get_variable("w2", shape=[256, 64], dtype=tf.float32, 
-                    initializer=tf.random_uniform_initializer(-math.sqrt(1.0 / (256 + 64)), math.sqrt(1.0 / (256 + 64)), dtype=tf.float32),
-                    trainable=True)
-                b2 = tf.get_variable("b2", shape=[64], dtype=tf.float32, 
-                    initializer=tf.zeros_initializer(dtype=tf.float32),
-                    trainable=True)
+                w2 = tf.get_variable("w2", shape=[256, 64], dtype=tf.float32, initializer=tf.random_uniform_initializer(-math.sqrt(1.0 / (256 + 64)), math.sqrt(1.0 / (256 + 64)), dtype=tf.float32), trainable=True)
+                b2 = tf.get_variable("b2", shape=[64], dtype=tf.float32, initializer=tf.zeros_initializer(dtype=tf.float32), trainable=True)
                 fc2 = tf.matmul(fc1, w2) + b2
                 fc2 = tf.nn.leaky_relu(fc2, alpha=0.05)
 
 
-                w3 = tf.get_variable("w3", shape=[64, 4], dtype=tf.float32, 
-                    initializer=tf.random_uniform_initializer(-math.sqrt(1.0 / (64 + 40)), math.sqrt(1.0 / (64 + 40)), dtype=tf.float32),
-                    trainable=True)
-                b3 = tf.get_variable("b3", shape=[4], dtype=tf.float32, 
-                    initializer=tf.zeros_initializer(dtype=tf.float32),
-                    trainable=True)
+                w3 = tf.get_variable("w3", shape=[64, 4], dtype=tf.float32, initializer=tf.random_uniform_initializer(-math.sqrt(1.0 / (64 + 40)), math.sqrt(1.0 / (64 + 40)), dtype=tf.float32), trainable=True)
+                b3 = tf.get_variable("b3", shape=[4], dtype=tf.float32, initializer=tf.zeros_initializer(dtype=tf.float32), trainable=True)
                 fc3 = tf.matmul(fc2, w3) + b3
                 self.raw_prob = fc3
                 self.probfc_params = tf.trainable_variables(scope=tf.get_variable_scope().name)
@@ -109,32 +81,20 @@ class PredictBehavior:
             with tf.variable_scope("DistFC_" + name, reuse=reuse):
                 fc = tf.concat([self.conv_fc, self.layer_input_state], axis=1)
 
-                w1 = tf.get_variable("w1", shape=[1029, 256], dtype=tf.float32, 
-                    initializer=tf.random_uniform_initializer(-math.sqrt(1.0 / 1029 + 256), math.sqrt(1.0 / 1029 + 256), dtype=tf.float32),
-                    trainable=True)
-                b1 = tf.get_variable("b1", shape=[256], dtype=tf.float32, 
-                    initializer=tf.zeros_initializer(dtype=tf.float32),
-                    trainable=True)
+                w1 = tf.get_variable("w1", shape=[1029, 256], dtype=tf.float32, initializer=tf.random_uniform_initializer(-math.sqrt(1.0 / 1029 + 256), math.sqrt(1.0 / 1029 + 256), dtype=tf.float32), trainable=True)
+                b1 = tf.get_variable("b1", shape=[256], dtype=tf.float32, initializer=tf.zeros_initializer(dtype=tf.float32), trainable=True)
                 fc1 = tf.matmul(fc, w1) + b1
                 fc1 = tf.nn.leaky_relu(fc1, alpha=0.05)
 
 
-                w2 = tf.get_variable("w2", shape=[256, 64], dtype=tf.float32, 
-                    initializer=tf.random_uniform_initializer(-math.sqrt(1.0 / (256 + 64)), math.sqrt(1.0 / (256 + 64)), dtype=tf.float32),
-                    trainable=True)
-                b2 = tf.get_variable("b2", shape=[64], dtype=tf.float32, 
-                    initializer=tf.zeros_initializer(dtype=tf.float32),
-                    trainable=True)
+                w2 = tf.get_variable("w2", shape=[256, 64], dtype=tf.float32, initializer=tf.random_uniform_initializer(-math.sqrt(1.0 / (256 + 64)), math.sqrt(1.0 / (256 + 64)), dtype=tf.float32), trainable=True)
+                b2 = tf.get_variable("b2", shape=[64], dtype=tf.float32, initializer=tf.zeros_initializer(dtype=tf.float32), trainable=True)
                 fc2 = tf.matmul(fc1, w2) + b2
                 fc2 = tf.nn.leaky_relu(fc2, alpha=0.05)
 
 
-                w3 = tf.get_variable("w3", shape=[64, 8], dtype=tf.float32, 
-                    initializer=tf.random_uniform_initializer(-math.sqrt(1.0 / (64 + 40)), math.sqrt(1.0 / (64 + 40)), dtype=tf.float32),
-                    trainable=True)
-                b3 = tf.get_variable("b3", shape=[8], dtype=tf.float32, 
-                    initializer=tf.zeros_initializer(dtype=tf.float32),
-                    trainable=True)
+                w3 = tf.get_variable("w3", shape=[64, 8], dtype=tf.float32, initializer=tf.random_uniform_initializer(-math.sqrt(1.0 / (64 + 40)), math.sqrt(1.0 / (64 + 40)), dtype=tf.float32), trainable=True)
+                b3 = tf.get_variable("b3", shape=[8], dtype=tf.float32, initializer=tf.zeros_initializer(dtype=tf.float32), trainable=True)
                 fc3 = tf.matmul(fc2, w3) + b3
                 self.mu = fc3
                 self.distfc_params = tf.trainable_variables(scope=tf.get_variable_scope().name)
